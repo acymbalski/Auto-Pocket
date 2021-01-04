@@ -2,7 +2,7 @@
 
 import requests
 import webbrowser
-import pickle
+import pickle5 as pickle
 import sys
 import configparser
 import argparse
@@ -116,6 +116,7 @@ def ret_all_articles(consumer_key, access_key, tag, detail_type='complete'):
     pocket_ret = requests.post('https://getpocket.com/v3/get',
         data= {'consumer_key':consumer_key,
         'access_token': access_key,
+        'state': 'all',
         'tag':tag})
 
     #TODO If status code != 200, then....
