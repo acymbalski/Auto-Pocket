@@ -14,7 +14,7 @@ import os
 
 #Get Pickle data
 def __init__():
-    redirect_uri = 'https://github.com/Dave-Vallance/Auto-Pocket.git'
+    redirect_uri = 'https://github.com/acymbalski/Auto-Pocket.git'
     request_url = 'https://getpocket.com/v3/oauth/request'
     auth_url = 'https://getpocket.com/auth/authorize?request_token='
     access_token_url = 'https://getpocket.com/v3/oauth/authorize'
@@ -190,10 +190,10 @@ print(home)
 '''
 Here I want to have the option to keep my configs seperate from the repository. 
 '''
-if os.path.exists(home + '/.config/Auto-Pocket/Auto-Pocket.config'):
-    config_file = home + '/.config/Auto-Pocket/Auto-Pocket.config'
+if os.path.exists(home + '/.config/Auto-Pocket/settings.config'):
+    config_file = home + '/.config/Auto-Pocket/settings.config'
 else:
-    config_file = 'Auto-Pocket.config'
+    config_file = 'settings.config'
 
 #Configparsing
 config = configparser.ConfigParser()
