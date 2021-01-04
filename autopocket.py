@@ -257,10 +257,37 @@ else:
                 print(article.title)
                 print(published)
             else:
-                print('going to add this!')
-                print(published)
-                print(article.title)
-                link = article.link
-                url_list.append(link)
+                # check if article has been archived
+                skip = False
+                print("Checking if article has been archived already...")
+                
+                # TODO either don't try to title-match or come up with a
+                # stronger/more elegant solution than this
+                # (it's okay enough for casual use but we'l probably
+                # run into issues before long)
+                title = article['title'].replace("'", "").replace("’", "")
+                
+                # note that as written this is only checking this feed's
+                # tag for this article
+                # TODO it might be better to get ALL articles when the
+                # program starts and handle it ourselves
+                # TODO also! we should have the option to run clean-up on our
+                # archives for old articles so our data doesn't get
+                # way out of control
+                for other_article_name in ret_data['list']:
+                    other_article = ret_data['list'][other_article]
+
+                    other_title = other_article['resolved_title'].replace("'", "").replace("’", "")
+                    if title == other_title and other_article['status'] == "1":
+                        skip = True
+                        print("Article found in archives. Skipping...")
+                        break
+                
+                if not skip:
+                    print('Going to add this!')
+                    print(published)
+                    print(article.title)
+                    link = article.link
+                    url_list.append(link)
         status = add_articles(url_list, consumer_key, access_key, tags)
         print('status = ' + str(status))
