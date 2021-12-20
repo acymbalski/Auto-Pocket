@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 import feedparser
 import time
 import os
+import re
 
 #Get Pickle data
 def __init__():
@@ -116,6 +117,7 @@ def ret_all_articles(consumer_key, access_key, tag, detail_type='complete'):
 	pocket_ret = requests.post('https://getpocket.com/v3/get',
 		data= {'consumer_key':consumer_key,
 		'access_token': access_key,
+		'state': 'all',
 		'tag':tag})
 
 	#TODO If status code != 200, then....
@@ -224,9 +226,12 @@ if args.url is not None:
 	print(status_code)
 
 else:
-	status_code, ret_data = ret_all_articles(consumer_key, access_key, cli_tag)
-	delete_article_check(ret_data, cli_delete_after)	
-
+	status_code, ret_all_data = ret_all_articles(consumer_key, access_key, cli_tag)
+	delete_article_check(ret_all_data, cli_delete_after)	
+	print("~~~~~~~~~~~~~")
+	print(ret_all_data)
+	print("~~~~~~~~~~~~~")
+	# exit(1) #return
 	for feed in feed_list:
 
 		#Retrieving Configs
@@ -253,14 +258,49 @@ else:
 			published = datetime.fromtimestamp(time.mktime(article.published_parsed))
 			if (current_time - article_range) > published:
 				print('Too old, skipping')
-				print(article.title)
-				print(published)
+				#print(article.title)
+				#print(published)
 			else:
-				print('going to add this!')
-				print(published)
-				print(article.title)
-				link = article.link
-				url_list.append(link)
+				# check if article has been archived
+				print("===========")
+				#print(article)
+				#print(ret_data['list'])
+				print("===========")
+				skip = False
+				print("Checking if article has already been archived...")
+				title = article['title']
+				title = re.sub(r'[^a-zA-Z]', '', title).lower()
+				title = title.replace("amp", "") # issues with ampersands
+				# title = title.replace("'", "").replace("’", "")
+				print("Searching archives for article \"{}\"".format(title))
+				for other_article in ret_data['list']:
+					#print(ret_data['list'][other_article])
+					#print(ret_data['list'][other_article]['resolved_title'])
+					#print(ret_data['list'][other_article]['status'])
+					
+					# drewnote: we should be using some better matching than this
+					other_title = ret_data['list'][other_article]['resolved_title']
+					#other_title = other_title.replace("'", "").replace("’", "")
+					other_title = re.sub(r'[^a-zA-Z]', '', other_title).lower()
+					other_title = other_title.replace("amp", "")
+					print("vs. article \"{}\"".format(other_title))
+
+					if title == other_title and ret_data['list'][other_article]['status'] == '1':
+						skip = True
+						print("Article found in archives. Skipping...")
+						break
+					elif title == other_title:
+						skip = True
+						print("Article found somewhere (not archives). Skipping...")
+						break
+				if not skip:
+					print('going to add this!')
+					#print(published)
+					#print(article.title)
+					link = article.link
+					url_list.append(link)
+				else:
+					print('article already archived; skipping')
 		status = add_articles(url_list, consumer_key, access_key, tags)
 		print('status = ' + str(status))
 				
