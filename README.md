@@ -1,5 +1,13 @@
 # Autopocket
 
+## TODO
+- Update quotation marks (consistency)
+- Remove excessive print statements
+- Stronger article matching for archive check
+- Add option to clean archive automatically
+- Add ability to reliably use multiple custom tags per feed
+- Fix initial authentication issue?
+
 ## Introduction
 
 Auto-pocket is a tool designed to automate the addition and removal of articles into your personal pocket account. It was designed primarily for use with Kobo ereaders to provide a daily selection of news articles to your reader for a newspaper like experience. 
